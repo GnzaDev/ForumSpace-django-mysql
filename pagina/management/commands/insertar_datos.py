@@ -52,7 +52,7 @@ class Command(BaseCommand):
         Post.objects.bulk_create(posts_data)
         self.stdout.write(self.style.SUCCESS('Posts creados exitosamente.'))
         
-        # Crear un superusuario (admin)
+        # Crear un superusuario en la bd (admin)
         admin_user = CustomUser.objects.create_superuser(
             username='admin',
             email='admin@admin.com',

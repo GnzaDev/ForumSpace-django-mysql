@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3 border-right">
+      <h5 class="mt-4 mb-3">Temáticas</h5>
+      <div class="list-group">
+        {% for categoria in categorias %}
+        <a
+          href="{% url 'index' %}?categoria={{ categoria.id }}"
+          class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+        >
+          {{ categoria.nombre }}
+          <span class="badge bg-primary rounded-pill">{{ categoria.tema_set.count }}</span>
+        </a>
+        {% empty %}
+        <div class="alert alert-info" role="alert">
+          No hay categorías disponibles.
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-md-9">
+      <div class="row align-items-center mt-4 mb-4">
+        <div class="col">
+          <ul class="nav nav-tabs">
+            <li class="nav-item">
+              <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'index' %}">Discusiones</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.path == request.build_absolute_uri|add:'mis_publicaciones/' %}active{% endif %}" href="{% url 'mis_publicaciones' %}">Mis Publicaciones</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.path == request.build_absolute_uri|add:'notificaciones/' %}active{% endif %}" href="{% url 'notificaciones' %}">Notificaciones</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.path == request.build_absolute_uri|add:'mostrar_perfil/' %}active{% endif %}" href="{% url 'mostrar_perfil' %}">Perfil</a>
+            </li>
+          </ul>
+        </div>
+        {% if user.is_authenticated %}
+        <div class="col-auto ms-auto">
+          <a class="btn btn-primary" href="{% url 'crear_post' %}">
+            <i class="fas fa-plus-circle"></i> Nuevo Post
+          </a>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <div class="input-group">
+            <form method="get" action="">
+              <input
+                type="text"
+                name="query"
+                class="form-control"
+                placeholder="Buscar discusiones..."
+                />
+            </form>
+            <button class="btn btn-outline-secondary" type="submit">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {% if request.path == request.build_absolute_uri|add:'mis_publicaciones/' %}
+        <!-- Contenido de Mis Publicaciones -->
+        <h2>Mis Publicaciones</h2>
+        <div class="list-group">
+          {% for publicacion in mis_publicaciones %}
+          <a href="{% url 'ver_post' publicacion.id %}" class="list-group-item list-group-item-action">
+            <h5 class="mb-1">{{ publicacion.titulo }}</h5>
+            <small class="text-muted">{{ publicacion.fecha_creacion|timesince }}</small>
+            <p class="mb-1">{{ publicacion.contenido|truncatewords:30 }}</p>
+          </a>
+          {% empty %}
+          <div class="alert alert-info" role="alert">
+            No tienes publicaciones.
+          </div>
+          {% endfor %}
+        </div>
+      {% elif request.path == request.build_absolute_uri|add:'notificaciones/' %}
+        <!-- Contenido de Notificaciones -->
+        <h2>Mis Notificaciones</h2>
+        <div class="list-group">
+          {% for notificacion in notificaciones %}
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ notificacion.mensaje }}</strong><br>
+              <small class="text-muted">{{ notificacion.fecha|timesince }} ago</small>
+            </div>
+            <a href="{{ notificacion.link }}" class="btn btn-link">Ver</a>
+          </div>
+          {% empty %}
+          <div class="alert alert-info" role="alert">
+            No tienes notificaciones.
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Lista de discusiones -->
+        <h2>Discusiones Recientes</h2>
+        <div class="list-group">
+          {% for discusion in posts %}
+          <a href="{% url 'ver_post' discusion.id %}" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">{{ discusion.titulo }}</h5>
+              <small class="text-muted">{{ discusion.fecha_creacion|timesince }}</small>
+            </div>
+            <p class="mb-1">{{ discusion.contenido|truncatewords:30 }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">Por {{ discusion.autor }}</small>
+              <div>
+                <span class="me-3">
+                  <i class="fas fa-comment"></i> {{ discusion.respuesta_set.count }}
+                </span>
+                <span>
+                  <i class="fas fa-heart"></i> {{ discusion.num_likes }}
+                </span>
+              </div>
+            </div>
+          </a>
+          {% empty %}
+          <div class="alert alert-info" role="alert">
+            No hay discusiones disponibles.
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Paginación -->
+      {% if posts.has_other_pages %}
+      <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if posts.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ posts.previous_page_number }}">Anterior</a>
+          </li>
+          {% endif %}
+          {% for i in posts.paginator.page_range %}
+          <li class="page-item {% if posts.number == i %}active{% endif %}">
+            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+          </li>
+          {% endfor %}
+          {% if posts.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ posts.next_page_number }}">Siguiente</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

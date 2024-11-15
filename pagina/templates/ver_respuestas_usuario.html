@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Respuestas de {{ usuario.username }}</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Contenido</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for respuesta in respuestas %}
+            <tr>
+                <td>{{ respuesta.contenido }}</td>
+                <td>{{ respuesta.fecha_publicacion }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">No hay respuestas para este usuario.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

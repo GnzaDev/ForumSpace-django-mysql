@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Banear Usuario: {{ usuario.username }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="tiempo_baneo">Selecciona el tiempo de baneo:</label>
+            <select name="tiempo_baneo" id="tiempo_baneo" class="form-control">
+                <option value="1 día">1 Día</option>
+                <option value="1 mes">1 Mes</option>
+                <option value="indefinido">Indefinido</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-danger mt-3">Banear Usuario</button>
+    </form>
+</div>
+{% endblock %}

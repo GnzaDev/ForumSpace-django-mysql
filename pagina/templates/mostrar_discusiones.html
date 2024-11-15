@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Discusiones{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Sidebar con categorías -->
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">Categorías</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'mostrar_discusiones' %}" class="list-group-item list-group-item-action {% if not categoria_actual %}active{% endif %}">
+                        Todas
+                        <span class="badge bg-secondary float-end">{{ total_discusiones }}</span>
+                    </a>
+                    {% for categoria in categorias %}
+                    <a href="{% url 'mostrar_discusiones' %}?categoria={{ categoria.id }}" 
+                       class="list-group-item list-group-item-action {% if categoria_actual.id == categoria.id %}active{% endif %}">
+                        {{ categoria.nombre }}
+                        <span class="badge bg-secondary float-end">{{ categoria.tema_set.count }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de discusiones -->
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        {% if categoria_actual %}
+                            Discusiones en {{ categoria_actual.nombre }}
+                        {% else %}
+                            Todas las Discusiones
+                        {% endif %}
+                    </h5>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'crear_tema' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Nueva Discusión
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <form class="mb-4" method="get">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="q" placeholder="Buscar discusiones..." 
+                                   value="{{ request.GET.q|default:'' }}">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if discusiones %}
+                        {% for discusion in discusiones %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-1">
+                                        <a href="{% url 'ver_tema' discusion.id %}" class="text-decoration-none">
+                                            {{ discusion.titulo }}
+                                        </a>
+                                    </h5>
+                                    <small class="text-muted">
+                                        {{ discusion.fecha_creacion|timesince }}
+                                    </small>
+                                </div>
+                                <p class="card-text text-muted mb-2">{{ discusion.contenido|truncatewords:30 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        {% if discusion.autor.avatar %}
+                                            <img src="{{ discusion.autor.avatar.url }}" alt="Avatar" 
+                                                 class="rounded-circle me-2" style="width: 24px; height: 24px;">
+                                        {% else %}
+                                            <i class="fas fa-user-circle me-2"></i>
+                                        {% endif %}
+                                        <small class="text-muted">{{ discusion.autor.username }}</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-light text-dark me-2">
+                                            <i class="fas fa-comment"></i> {{ discusion.respuesta_set.count }}
+                                        </span>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fas fa-heart"></i> {{ discusion.likes.count }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% if discusiones.has_other_pages %}
+                        <nav aria-label="Navegación de páginas">
+                            <ul class="pagination justify-content-center">
+                                {% if discusiones.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ discusiones.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}">Anterior</a>
+                                </li>
+                                {% endif %}
+
+                                {% for num in discusiones.paginator.page_range %}
+                                <li class="page-item {% if discusiones.number == num %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}">{{ num }}</a>
+                                </li>
+                                {% endfor %}
+
+                                {% if discusiones.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ discusiones.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.categoria %}&categoria={{ request.GET.categoria }}{% endif %}">Siguiente</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                            <p class="lead">No hay discusiones disponibles</p>
+                            {% if user.is_authenticated %}
+                            <a href="{% url 'crear_tema' %}" class="btn btn-primary">
+                                Crear la primera discusión
+                            </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

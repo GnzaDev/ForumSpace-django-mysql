@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Publicaciones de {{ usuario.username }}</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Contenido</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for publicacion in publicaciones %}
+            <tr>
+                <td>{{ publicacion.titulo }}</td>
+                <td>{{ publicacion.contenido }}</td>
+                <td>{{ publicacion.fecha_publicacion }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No hay publicaciones para este usuario.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

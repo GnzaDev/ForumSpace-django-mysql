@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Editar Categoría: {{ categoria.nombre }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre de la Categoría</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ categoria.nombre }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar Categoría</button>
+        <a href="{% url 'admin_panel' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

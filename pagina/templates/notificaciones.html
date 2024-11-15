@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Notificaciones{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2 class="mt-4">Mis Notificaciones</h2>
+        <hr>
+        
+        {% if notificaciones %}
+            <ul class="list-group">
+                {% for notificacion in notificaciones %}
+                    <li class="list-group-item {% if notificacion.leida %}list-group-item-success{% else %}list-group-item-warning{% endif %}">
+                        <strong>{{ notificacion.tipo|capfirst }}</strong> - {{ notificacion.tema.titulo }} por {{ notificacion.autor.username }} 
+                        <span class="float-end">{{ notificacion.fecha_creacion|date:"d M Y, H:i" }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                No tienes notificaciones nuevas.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

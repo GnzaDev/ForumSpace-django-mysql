@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Panel de Administración</h2>
+    
+    <div class="mb-4">
+        <h3>Categorías</h3>
+        <a href="{% url 'crear_categoria' %}" class="btn btn-success">Crear Nueva Categoría</a>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th>Nombre de la Categoría</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>{{ categoria.nombre }}</td>
+                    <td>
+                        <a href="{% url 'editar_categoria' categoria.id %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'eliminar_categoria' categoria.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">No hay categorías disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mb-4">
+        <h3>Posts Pendientes de Aprobación</h3>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts_pendientes %}
+                <tr>
+                    <td>{{ post.titulo }}</td>
+                    <td>{{ post.autor.username }}</td>
+                    <td>
+                        <a href="{% url 'aprobar_respuesta' post.id %}" class="btn btn-success btn-sm">Aprobar</a>
+                        <a href="{% url 'eliminar_post' post.id %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este post?');">Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">No hay Posts pendientes.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mb-4">
+        <h3>Lista de Usuarios</h3>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th>Nombre de Usuario</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario.username }}</td>
+                    <td>{{ usuario.email }}</td>
+                    <td>
+                        <!-- Acciones para el usuario -->
+                        <a href="{% url 'ver_publicaciones_usuario' usuario.id %}" class="btn btn-primary btn-sm">Ver Posts</a>
+                        <a href="{% url 'ver_respuestas_usuario' usuario.id %}" class="btn btn-info btn-sm">Ver Respuestas</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">No hay usuarios registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

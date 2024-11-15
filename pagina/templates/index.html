@@ -5,7 +5,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-3 border-right">
-      <h5 class="mt-4 mb-3">Temáticas</h5>
+      <h5 class="mt-4 mb-3">Categorias</h5>
       <div class="list-group">
         {% for categoria in categorias %}
         <a
@@ -13,7 +13,7 @@
           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
         >
           {{ categoria.nombre }}
-          <span class="badge bg-primary rounded-pill">{{ categoria.tema_set.count }}</span>
+          <span class="badge bg-primary rounded-pill">{{ categoria.post_set.count }}</span>
         </a>
         {% empty %}
         <div class="alert alert-info" role="alert">
